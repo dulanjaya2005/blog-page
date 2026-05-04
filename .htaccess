@@ -1,0 +1,24 @@
+Options -Indexes
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Deny access to sensitive files
+<FilesMatch "\.(sql|log|env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Block access to includes directory
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^includes/ - [F,L]
+</IfModule>
+
+# PHP error handling
+php_flag display_errors Off
+php_flag log_errors On

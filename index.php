@@ -4,6 +4,7 @@
  */
 
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/lang.php';
 
 $pageTitle = SITE_NAME . ' — ' . SITE_TAGLINE;
 $metaDesc  = 'Stories that move you. Engaging articles on Love, Horror, Mystery, Psychology, Technology and Making Money Online.';
@@ -36,7 +37,7 @@ $cardImages = [
 <section class="hero" aria-label="Featured posts slider">
   <?php foreach ($featuredPosts as $i => $post): ?>
   <div class="hero-slide <?= $i === 0 ? 'active' : '' ?>">
-    <img src="<?= $heroImages[$i % count($heroImages)] ?>"
+    <img src="<?= postImage($post['image'] ?? null, $post['title'], $i) ?>"
          alt="<?= htmlspecialchars($post['title']) ?>"
          loading="<?= $i === 0 ? 'eager' : 'lazy' ?>">
     <div class="hero-overlay"></div>
@@ -48,12 +49,11 @@ $cardImages = [
       <h1 class="hero-title"><?= htmlspecialchars($post['title']) ?></h1>
       <p class="hero-excerpt"><?= htmlspecialchars(excerpt($post['content'], 20)) ?></p>
       <a href="<?= SITE_URL ?>/post.php?slug=<?= urlencode($post['slug']) ?>" class="btn btn-primary">
-        Read Article <i class="fas fa-arrow-right"></i>
+        <?= t('read_more') ?> <i class="fas fa-arrow-right"></i>
       </a>
     </div>
   </div>
   <?php endforeach; ?>
-
   <div class="hero-controls" aria-label="Slider navigation">
     <?php for ($i = 0; $i < count($featuredPosts); $i++): ?>
     <button class="hero-dot <?= $i === 0 ? 'active' : '' ?>" aria-label="Go to slide <?= $i+1 ?>"></button>
@@ -65,22 +65,18 @@ $cardImages = [
 <section class="section">
   <div class="container">
     <div class="content-layout">
-
-      <!-- Posts -->
       <div>
         <div class="section-header">
-          <h2 class="section-title">Latest Stories</h2>
-          <a href="<?= SITE_URL ?>/blog.php" class="section-link">View all <i class="fas fa-arrow-right"></i></a>
+          <h2 class="section-title"><?= t('latest_stories') ?></h2>
+          <a href="<?= SITE_URL ?>/blog.php" class="section-link"><?= t('view_all') ?> <i class="fas fa-arrow-right"></i></a>
         </div>
-
         <div class="posts-grid">
           <?php foreach ($latestPosts as $i => $post): ?>
           <article class="post-card" itemscope itemtype="https://schema.org/BlogPosting">
             <a href="<?= SITE_URL ?>/post.php?slug=<?= urlencode($post['slug']) ?>" class="card-image">
-              <img src="<?= $cardImages[$i % count($cardImages)] ?>"
+              <img src="<?= postImage($post['image'] ?? null, $post['title'], $i) ?>"
                    alt="<?= htmlspecialchars($post['title']) ?>"
-                   loading="lazy" width="600" height="375"
-                   itemprop="image">
+                   loading="lazy" width="600" height="375" itemprop="image">
               <span class="card-badge">
                 <i class="fas <?= htmlspecialchars($post['category_icon'] ?? 'fa-tag') ?>"></i>
                 <?= htmlspecialchars($post['category_name'] ?? '') ?>
@@ -103,7 +99,7 @@ $cardImages = [
                   <?= htmlspecialchars($post['author']) ?>
                 </span>
                 <a href="<?= SITE_URL ?>/post.php?slug=<?= urlencode($post['slug']) ?>" class="read-more">
-                  Read more <i class="fas fa-arrow-right"></i>
+                  <?= t('read_more') ?> <i class="fas fa-arrow-right"></i>
                 </a>
               </div>
             </div>
@@ -114,35 +110,30 @@ $cardImages = [
 
       <!-- Sidebar -->
       <aside class="sidebar">
-        <!-- Trending -->
         <div class="sidebar-widget">
-          <h3 class="widget-title"><i class="fas fa-fire" style="color:var(--accent)"></i> Trending Now</h3>
-          <?php foreach ($trendingPosts as $i => $t): ?>
-          <a href="<?= SITE_URL ?>/post.php?slug=<?= urlencode($t['slug']) ?>" class="trending-item">
+          <h3 class="widget-title"><i class="fas fa-fire" style="color:var(--accent)"></i> <?= t('trending_now') ?></h3>
+          <?php foreach ($trendingPosts as $i => $t2): ?>
+          <a href="<?= SITE_URL ?>/post.php?slug=<?= urlencode($t2['slug']) ?>" class="trending-item">
             <span class="trending-num"><?= str_pad($i+1, 2, '0', STR_PAD_LEFT) ?></span>
-            <img src="<?= $cardImages[$i % count($cardImages)] ?>"
-                 class="trending-thumb" alt="<?= htmlspecialchars($t['title']) ?>" loading="lazy">
+            <img src="<?= postImage($t2['image'] ?? null, $t2['title'], $i) ?>"
+                 class="trending-thumb" alt="<?= htmlspecialchars($t2['title']) ?>" loading="lazy">
             <div class="trending-info">
-              <div class="trending-title"><?= htmlspecialchars($t['title']) ?></div>
-              <div class="trending-meta">
-                <i class="far fa-clock"></i> <?= readingTime($t['content']) ?>
-              </div>
+              <div class="trending-title"><?= htmlspecialchars($t2['title']) ?></div>
+              <div class="trending-meta"><i class="far fa-clock"></i> <?= readingTime($t2['content']) ?></div>
             </div>
           </a>
           <?php endforeach; ?>
         </div>
 
-        <!-- AdSense Sidebar -->
         <div class="sidebar-widget" style="padding:0">
           <div class="ad-placeholder ad-sidebar">
             <i class="fas fa-rectangle-ad"></i>
-            <span>Advertisement</span>
+            <span><?= t('advertisement') ?></span>
           </div>
         </div>
 
-        <!-- Categories Widget -->
         <div class="sidebar-widget">
-          <h3 class="widget-title"><i class="fas fa-layer-group" style="color:var(--accent)"></i> Categories</h3>
+          <h3 class="widget-title"><i class="fas fa-layer-group" style="color:var(--accent)"></i> <?= t('categories') ?></h3>
           <?php foreach ($categories as $cat): ?>
           <a href="<?= SITE_URL ?>/category.php?slug=<?= urlencode($cat['slug']) ?>"
              style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);text-decoration:none;transition:color .2s ease"
@@ -158,7 +149,6 @@ $cardImages = [
           <?php endforeach; ?>
         </div>
       </aside>
-
     </div>
   </div>
 </section>
@@ -167,17 +157,15 @@ $cardImages = [
 <section class="section-sm" style="background:var(--bg-secondary)">
   <div class="container">
     <div class="section-header">
-      <h2 class="section-title">Browse by Category</h2>
-      <a href="<?= SITE_URL ?>/blog.php" class="section-link">See all <i class="fas fa-arrow-right"></i></a>
+      <h2 class="section-title"><?= t('browse_by_category') ?></h2>
+      <a href="<?= SITE_URL ?>/blog.php" class="section-link"><?= t('view_all') ?> <i class="fas fa-arrow-right"></i></a>
     </div>
     <div class="categories-grid">
       <?php foreach ($categories as $cat): ?>
       <a href="<?= SITE_URL ?>/category.php?slug=<?= urlencode($cat['slug']) ?>" class="category-card">
-        <div class="cat-icon">
-          <i class="fas <?= htmlspecialchars($cat['icon']) ?>"></i>
-        </div>
+        <div class="cat-icon"><i class="fas <?= htmlspecialchars($cat['icon']) ?>"></i></div>
         <div class="cat-name"><?= htmlspecialchars($cat['name']) ?></div>
-        <div class="cat-count"><?= $cat['post_count'] ?> articles</div>
+        <div class="cat-count"><?= $cat['post_count'] ?> <?= t('articles') ?></div>
       </a>
       <?php endforeach; ?>
     </div>
@@ -188,12 +176,12 @@ $cardImages = [
 <section class="section">
   <div class="container">
     <div class="newsletter-section">
-      <h2 class="newsletter-title">Stories Worth Subscribing To</h2>
-      <p class="newsletter-subtitle">Join 12,000+ readers who get our best articles delivered every week.</p>
+      <h2 class="newsletter-title"><?= t('newsletter_title') ?></h2>
+      <p class="newsletter-subtitle"><?= t('newsletter_subtitle') ?></p>
       <form class="newsletter-form" novalidate>
-        <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+        <input type="email" class="newsletter-input" placeholder="<?= t('email_placeholder') ?>" required>
         <button type="submit" class="btn btn-white">
-          <i class="fas fa-paper-plane"></i> Subscribe
+          <i class="fas fa-paper-plane"></i> <?= t('subscribe') ?>
         </button>
       </form>
     </div>

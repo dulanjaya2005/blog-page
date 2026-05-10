@@ -1,35 +1,28 @@
 <?php
 /**
- * Core Helper Functions
+ * Core Helper Functions — includes/functions.php
  */
 
 require_once __DIR__ . '/db.php';
 
-// ─── Security ──────────────────────────────────────────────────────────────
-
+// ─── Security ──────────────────────────────────────────────
 function sanitize(string $input): string {
     return htmlspecialchars(strip_tags(trim($input)), ENT_QUOTES, 'UTF-8');
 }
-
 function generateSlug(string $title): string {
-    $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title), '-'));
-    return $slug;
+    return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title), '-'));
 }
-
 function hashPassword(string $password): string {
     return password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
 }
-
 function verifyPassword(string $password, string $hash): bool {
     return password_verify($password, $hash);
 }
 
-// ─── Session / Auth ────────────────────────────────────────────────────────
-
+// ─── Session / Auth ────────────────────────────────────────
 function isAdminLoggedIn(): bool {
     return isset($_SESSION['admin_id']) && !empty($_SESSION['admin_id']);
 }
-
 function requireAdmin(): void {
     if (!isAdminLoggedIn()) {
         header('Location: ' . SITE_URL . '/admin/login.php');
@@ -37,24 +30,21 @@ function requireAdmin(): void {
     }
 }
 
-// ─── Reading Time ──────────────────────────────────────────────────────────
-
+// ─── Reading Time ──────────────────────────────────────────
 function readingTime(string $content): string {
     $wordCount = str_word_count(strip_tags($content));
-    $minutes   = (int) ceil($wordCount / 200);
+    $minutes   = (int)ceil($wordCount / 200);
     return $minutes < 1 ? '1 min read' : $minutes . ' min read';
 }
 
-// ─── Posts ─────────────────────────────────────────────────────────────────
-
+// ─── Posts ─────────────────────────────────────────────────
 function getPosts(int $limit = 10, int $offset = 0, ?int $categoryId = null): array {
     global $pdo;
     $sql    = "SELECT p.*, c.name AS category_name, c.icon AS category_icon
-               FROM posts p
-               LEFT JOIN categories c ON p.category_id = c.id";
+               FROM posts p LEFT JOIN categories c ON p.category_id = c.id";
     $params = [];
     if ($categoryId !== null) {
-        $sql    .= " WHERE p.category_id = ?";
+        $sql     .= " WHERE p.category_id = ?";
         $params[] = $categoryId;
     }
     $sql .= " ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
@@ -118,7 +108,7 @@ function countPosts(?int $categoryId = null): int {
     } else {
         $stmt = $pdo->query("SELECT COUNT(*) FROM posts");
     }
-    return (int) $stmt->fetchColumn();
+    return (int)$stmt->fetchColumn();
 }
 
 function searchPosts(string $query, int $limit = 10): array {
@@ -134,8 +124,7 @@ function searchPosts(string $query, int $limit = 10): array {
     return $stmt->fetchAll();
 }
 
-// ─── Categories ────────────────────────────────────────────────────────────
-
+// ─── Categories ────────────────────────────────────────────
 function getCategories(): array {
     global $pdo;
     return $pdo->query(
@@ -159,8 +148,7 @@ function getCategoryBySlug(string $slug): ?array {
     return $stmt->fetch() ?: null;
 }
 
-// ─── Comments ──────────────────────────────────────────────────────────────
-
+// ─── Comments ──────────────────────────────────────────────
 function getApprovedComments(int $postId): array {
     global $pdo;
     $stmt = $pdo->prepare(
@@ -172,23 +160,21 @@ function getApprovedComments(int $postId): array {
 
 function countComments(): int {
     global $pdo;
-    return (int) $pdo->query("SELECT COUNT(*) FROM comments WHERE status = 'pending'")->fetchColumn();
+    return (int)$pdo->query("SELECT COUNT(*) FROM comments WHERE status = 'pending'")->fetchColumn();
 }
 
-// ─── Stats ─────────────────────────────────────────────────────────────────
-
+// ─── Stats ─────────────────────────────────────────────────
 function getDashboardStats(): array {
     global $pdo;
     return [
-        'posts'      => (int) $pdo->query("SELECT COUNT(*) FROM posts")->fetchColumn(),
-        'categories' => (int) $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn(),
-        'comments'   => (int) $pdo->query("SELECT COUNT(*) FROM comments")->fetchColumn(),
-        'contacts'   => (int) $pdo->query("SELECT COUNT(*) FROM contacts")->fetchColumn(),
+        'posts'      => (int)$pdo->query("SELECT COUNT(*) FROM posts")->fetchColumn(),
+        'categories' => (int)$pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn(),
+        'comments'   => (int)$pdo->query("SELECT COUNT(*) FROM comments")->fetchColumn(),
+        'contacts'   => (int)$pdo->query("SELECT COUNT(*) FROM contacts")->fetchColumn(),
     ];
 }
 
-// ─── Excerpt ───────────────────────────────────────────────────────────────
-
+// ─── Excerpt ───────────────────────────────────────────────
 function excerpt(string $content, int $words = 25): string {
     $text  = strip_tags($content);
     $arr   = explode(' ', $text);
@@ -196,25 +182,34 @@ function excerpt(string $content, int $words = 25): string {
     return implode(' ', $slice) . (count($arr) > $words ? '…' : '');
 }
 
-// ─── Date Format ───────────────────────────────────────────────────────────
-
+// ─── Date Format ───────────────────────────────────────────
 function formatDate(string $date): string {
     return date('F j, Y', strtotime($date));
 }
 
-// ─── Image Helper ──────────────────────────────────────────────────────────
+// ─── Image Helper ──────────────────────────────────────────
+/**
+ * Returns full URL to post thumbnail.
+ * Falls back to Unsplash placeholder if no image set.
+ */
+function postImage(?string $image, string $alt = '', int $index = 0): string {
+    $fallbacks = [
+        'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=800&q=80',
+        'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&q=80',
+        'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
+        'https://images.unsplash.com/photo-1474631245212-32dc3c8310c6?w=800&q=80',
+        'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&q=80',
+        'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
+    ];
 
-function postImage(string $image, string $alt = ''): string {
     if ($image && file_exists(__DIR__ . '/../assets/images/' . $image)) {
         return SITE_URL . '/assets/images/' . htmlspecialchars($image);
     }
-    // Fallback placeholder
-    $encoded = urlencode($alt ?: 'Blog Post');
-    return "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&q=80";
+
+    return $fallbacks[$index % count($fallbacks)];
 }
 
-// ─── CSRF ──────────────────────────────────────────────────────────────────
-
+// ─── CSRF ──────────────────────────────────────────────────
 function csrfToken(): string {
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));

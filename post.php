@@ -31,7 +31,7 @@ $schema = json_encode([
 ]);
 $extraHead = "<script type=\"application/ld+json\">{$schema}</script>";
 
-$heroImg = 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&q=80';
+$heroImg = postImage($post['image'] ?? null, $post['title']);
 $relatedImages = [
   'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&q=80',
   'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&q=80',
@@ -253,7 +253,7 @@ require_once __DIR__ . '/includes/header.php';
         <?php foreach ($relatedPosts as $i => $r): ?>
         <article class="post-card">
           <a href="<?= SITE_URL ?>/post.php?slug=<?= urlencode($r['slug']) ?>" class="card-image">
-            <img src="<?= $relatedImages[$i % count($relatedImages)] ?>"
+            <img src="<?= postImage($r['image'] ?? null, $r['title'], $i) ?>"
                  alt="<?= htmlspecialchars($r['title']) ?>" loading="lazy">
             <span class="card-badge"><?= htmlspecialchars($r['category_name'] ?? '') ?></span>
           </a>

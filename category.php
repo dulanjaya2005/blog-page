@@ -15,12 +15,18 @@ if (!$slug) { header('Location: ' . SITE_URL . '/blog.php'); exit; }
 $cat = getCategoryBySlug($slug);
 if (!$cat) { header('HTTP/1.0 404 Not Found'); include __DIR__ . '/404.php'; exit; }
 
-$posts      = getPosts($perPage, $offset, $cat['id']);
-$total      = countPosts($cat['id']);
+// ── Save category data before header.php overwrites $categories ──
+$catId      = (int)$cat['id'];
+$catName    = $cat['name'];
+$catIcon    = $cat['icon'];
+$catSlug    = $cat['slug'];
+
+$posts      = getPosts($perPage, $offset, $catId);
+$total      = countPosts($catId);
 $totalPages = (int) ceil($total / $perPage);
 
-$pageTitle = htmlspecialchars($cat['name']) . ' Articles — ' . SITE_NAME;
-$metaDesc  = 'Browse all ' . $cat['name'] . ' articles on ' . SITE_NAME . '. Engaging stories and deep dives.';
+$pageTitle = htmlspecialchars($catName) . ' Articles — ' . SITE_NAME;
+$metaDesc  = 'Browse all ' . $catName . ' articles on ' . SITE_NAME . '. Engaging stories and deep dives.';
 
 $cardImages = [
   'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&q=80',
@@ -38,16 +44,16 @@ require_once __DIR__ . '/includes/header.php';
   <div class="container">
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
       <div style="width:52px;height:52px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center">
-        <i class="fas <?= htmlspecialchars($cat['icon']) ?>" style="font-size:1.3rem;color:var(--accent)"></i>
+        <i class="fas <?= htmlspecialchars($catIcon) ?>" style="font-size:1.3rem;color:var(--accent)"></i>
       </div>
-      <h1 class="page-hero-title" style="margin:0"><?= htmlspecialchars($cat['name']) ?></h1>
+      <h1 class="page-hero-title" style="margin:0"><?= htmlspecialchars($catName) ?></h1>
     </div>
     <div class="breadcrumb">
       <a href="<?= SITE_URL ?>">Home</a>
       <span class="breadcrumb-sep">›</span>
       <a href="<?= SITE_URL ?>/blog.php">Blog</a>
       <span class="breadcrumb-sep">›</span>
-      <span><?= htmlspecialchars($cat['name']) ?></span>
+      <span><?= htmlspecialchars($catName) ?></span>
     </div>
   </div>
 </div>
@@ -56,9 +62,9 @@ require_once __DIR__ . '/includes/header.php';
   <div class="container">
     <?php if (empty($posts)): ?>
     <div class="empty-state">
-      <i class="fas <?= htmlspecialchars($cat['icon']) ?>"></i>
+      <i class="fas <?= htmlspecialchars($catIcon) ?>"></i>
       <h3>No articles yet</h3>
-      <p>We haven't published anything in <strong><?= htmlspecialchars($cat['name']) ?></strong> yet. Check back soon!</p>
+      <p>We haven't published anything in <strong><?= htmlspecialchars($catName) ?></strong> yet. Check back soon!</p>
       <a href="<?= SITE_URL ?>/blog.php" class="btn btn-outline" style="margin-top:16px">Browse All Articles</a>
     </div>
     <?php else: ?>
@@ -69,12 +75,12 @@ require_once __DIR__ . '/includes/header.php';
       <?php foreach ($posts as $i => $post): ?>
       <article class="post-card" itemscope itemtype="https://schema.org/BlogPosting">
         <a href="<?= SITE_URL ?>/post.php?slug=<?= urlencode($post['slug']) ?>" class="card-image">
-          <img src="<?= $cardImages[$i % count($cardImages)] ?>"
+          <img src="<?= postImage($post['image'] ?? null, $post['title'], $i) ?>"
                alt="<?= htmlspecialchars($post['title']) ?>"
                loading="lazy" width="600" height="375">
           <span class="card-badge">
-            <i class="fas <?= htmlspecialchars($cat['icon']) ?>"></i>
-            <?= htmlspecialchars($cat['name']) ?>
+            <i class="fas <?= htmlspecialchars($catIcon) ?>"></i>
+            <?= htmlspecialchars($catName) ?>
           </span>
         </a>
         <div class="card-body">

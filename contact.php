@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . '/includes/functions.php';
 $pageTitle = 'Contact Us — ' . SITE_NAME;
 $metaDesc  = 'Get in touch with the CharmVibe team. We read every message.';

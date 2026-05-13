@@ -60,8 +60,11 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Post Hero -->
-<div class="post-hero">
-  <img src="<?= $heroImg ?>" alt="<?= htmlspecialchars($post['title']) ?>" loading="eager">
+<div class="post-hero" style="position:relative;width:100%;max-height:500px;overflow:hidden;background:#000">
+  <img src="<?= $heroImg ?>"
+       alt="<?= htmlspecialchars($post['title']) ?>"
+       loading="eager"
+       style="width:100%;height:500px;object-fit:cover;object-position:center;display:block">
   <div class="post-hero-overlay"></div>
 </div>
 
@@ -119,9 +122,23 @@ require_once __DIR__ . '/includes/header.php';
         <?php if ($post['tags']): ?>
         <div class="post-tags">
           <i class="fas fa-tags" style="color:var(--accent);margin-right:8px"></i>
-          <?php foreach (explode(',', $post['tags']) as $tag): ?>
-          <a href="<?= SITE_URL ?>/blog.php?search=<?= urlencode(trim($tag)) ?>" class="tag">
-            #<?= htmlspecialchars(trim($tag)) ?>
+          <?php
+          $tagList = explode(',', $post['tags']);
+          foreach ($tagList as $tag):
+            $cleanTag = ltrim(trim($tag), '#');
+            $cleanTag = trim(preg_replace('/[^a-zA-Z0-9\s\-_]/u', '', $cleanTag));
+            if (!$cleanTag) continue;
+          ?>
+          <a href="<?= SITE_URL ?>/blog.php?search=<?= urlencode($cleanTag) ?>"
+             class="tag"
+             style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;
+                    background:var(--bg-secondary);border:1px solid var(--border);
+                    border-radius:99px;font-size:.8rem;font-weight:600;
+                    color:var(--text-muted);text-decoration:none;
+                    transition:all .2s ease;margin:3px"
+             onmouseover="this.style.background='var(--accent-light)';this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
+             onmouseout="this.style.background='var(--bg-secondary)';this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">
+            <i class="fas fa-hashtag" style="font-size:.65rem"></i><?= htmlspecialchars($cleanTag) ?>
           </a>
           <?php endforeach; ?>
         </div>

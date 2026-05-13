@@ -37,9 +37,10 @@ $cardImages = [
 <section class="hero" aria-label="Featured posts slider">
   <?php foreach ($featuredPosts as $i => $post): ?>
   <div class="hero-slide <?= $i === 0 ? 'active' : '' ?>">
-    <img src="<?= postImage($post['image'] ?? null, $post['title'], $i) ?>"
+    <img src="<?= $heroImages[$i % count($heroImages)] ?>"
          alt="<?= htmlspecialchars($post['title']) ?>"
-         loading="<?= $i === 0 ? 'eager' : 'lazy' ?>">
+         loading="<?= $i === 0 ? 'eager' : 'lazy' ?>"
+         style="width:100%;height:100%;object-fit:cover;object-position:center">
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <div class="hero-badge">
@@ -73,10 +74,13 @@ $cardImages = [
         <div class="posts-grid">
           <?php foreach ($latestPosts as $i => $post): ?>
           <article class="post-card" itemscope itemtype="https://schema.org/BlogPosting">
-            <a href="<?= SITE_URL ?>/post.php?slug=<?= urlencode($post['slug']) ?>" class="card-image">
+            <a href="<?= SITE_URL ?>/post.php?slug=<?= urlencode($post['slug']) ?>" class="card-image"
+               style="display:block;overflow:hidden;border-radius:var(--radius-md) var(--radius-md) 0 0;aspect-ratio:16/9;position:relative">
               <img src="<?= postImage($post['image'] ?? null, $post['title'], $i) ?>"
                    alt="<?= htmlspecialchars($post['title']) ?>"
-                   loading="lazy" width="600" height="375" itemprop="image">
+                   loading="lazy"
+                   style="width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .4s ease"
+                   itemprop="image">
               <span class="card-badge">
                 <i class="fas <?= htmlspecialchars($post['category_icon'] ?? 'fa-tag') ?>"></i>
                 <?= htmlspecialchars($post['category_name'] ?? '') ?>
@@ -115,7 +119,7 @@ $cardImages = [
           <?php foreach ($trendingPosts as $i => $t2): ?>
           <a href="<?= SITE_URL ?>/post.php?slug=<?= urlencode($t2['slug']) ?>" class="trending-item">
             <span class="trending-num"><?= str_pad($i+1, 2, '0', STR_PAD_LEFT) ?></span>
-            <img src="<?= postImage($t2['image'] ?? null, $t2['title'], $i) ?>"
+            <img src="<?= $cardImages[$i % count($cardImages)] ?>"
                  class="trending-thumb" alt="<?= htmlspecialchars($t2['title']) ?>" loading="lazy">
             <div class="trending-info">
               <div class="trending-title"><?= htmlspecialchars($t2['title']) ?></div>

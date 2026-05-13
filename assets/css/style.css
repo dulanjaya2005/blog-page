@@ -930,3 +930,108 @@ footer {
   .post-title { font-size: 1.8rem; }
   .share-buttons { flex-wrap: wrap; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   ADD THESE CSS RULES TO: assets/css/style.css
+   Paste at the very BOTTOM of the file
+   ═══════════════════════════════════════════════════════ */
+
+/* ── YouTube 16:9 Hero Slider ── */
+.hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 620px;
+  min-height: 360px;
+  overflow: hidden;
+  background: #000;
+}
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.hero-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* ── YouTube 16:9 Post Hero ── */
+.post-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 520px;
+  overflow: hidden;
+  background: #000;
+}
+.post-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* ── YouTube 16:9 Card Images ── */
+.card-image {
+  display: block;
+  overflow: hidden;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  background: var(--bg-secondary);
+}
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.card-image:hover img {
+  transform: scale(1.04);
+}
+
+/* ── Trending Thumb 16:9 ── */
+.trending-thumb {
+  width: 72px;
+  height: 40px; /* 72 × 9/16 = 40.5 */
+  object-fit: cover;
+  object-position: center;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* ── Tag Pills ── */
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 24px 0;
+}
+.post-tags .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all .2s ease;
+}
+.post-tags .tag:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+}

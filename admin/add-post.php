@@ -341,7 +341,10 @@ function thumbUrl(?string $img): string {
                      onchange="previewThumb(this)">
               <i class="fas fa-cloud-arrow-up" style="font-size:2rem;color:var(--admin-accent);margin-bottom:10px;display:block"></i>
               <div style="font-weight:600;font-size:.875rem;margin-bottom:4px">Click or drag to upload</div>
-              <div style="font-size:.75rem;color:var(--admin-muted)">JPG, PNG, WEBP, GIF · Max 5MB</div>
+              <div style="font-size:.75rem;color:var(--admin-muted)">
+                JPG, PNG, WEBP · Max 5MB<br>
+                <strong style="color:var(--admin-accent)">Best size: 1280 × 720px (YouTube thumbnail)</strong>
+              </div>
             </div>
 
             <!-- Hidden remove flag -->
